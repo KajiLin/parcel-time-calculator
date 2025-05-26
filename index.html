@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>包裹處理秒數計算器</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    h2, h3 {
+      margin-top: 30px;
+    }
+    .section {
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+    }
+    .time-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .time-row label {
+      flex: 1 1 30%;
+      min-width: 80px;
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 6px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      margin-top: 10px;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 18px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>兩次上架平均處理秒數計算器</h2>
+
+  <div class="section">
+    <h3>第一次上架</h3>
+    <div class="time-row">
+      <label>開始時間（時）<input type="number" id="startHour1" min="0" max="23"></label>
+      <label>分<input type="number" id="startMinute1" min="0" max="59"></label>
+      <label>秒<input type="number" id="startSecond1" min="0" max="59"></label>
+    </div>
+    <div class="time-row">
+      <label>結束時間（時）<input type="number" id="endHour1" min="0" max="23"></label>
+      <label>分<input type="number" id="endMinute1" min="0" max="59"></label>
+      <label>秒<input type="number" id="endSecond1" min="0" max="59"></label>
+    </div>
+    <label>包裹數量：<input type="number" id="packageCount1" min="1"></label>
+  </div>
+
+  <div class="section">
+    <h3>第二次上架</h3>
+    <div class="time-row">
+      <label>開始時間（時）<input type="number" id="startHour2" min="0" max="23"></label>
+      <label>分<input type="number" id="startMinute2" min="0" max="59"></label>
+      <label>秒<input type="number" id="startSecond2" min="0" max="59"></label>
+    </div>
+    <div class="time-row">
+      <label>結束時間（時）<input type="number" id="endHour2" min="0" max="23"></label>
+      <label>分<input type="number" id="endMinute2" min="0" max="59"></label>
+      <label>秒<input type="number" id="endSecond2" min="0" max="59"></label>
+    </div>
+    <label>包裹數量：<input type="number" id="packageCount2" min="1"></label>
+  </div>
+
+  <button onclick="calculate()">計算</button>
+
+  <div id="result"></div>
+
+  <script>
+    function getTotalSeconds(hourId, minuteId, secondId) {
+      const h = parseInt(document.getElementById(hourId).value) || 0;
+      const m = parseInt(document.getElementById(minuteId).value) || 0;
+      const s = parseInt(document.getElementById(secondId).value) || 0;
+      return h * 3600 + m * 60 + s;
+    }
+
+    function calculateOne(startSec, endSec, count) {
+      const duration = endSec - startSec;
+      if (duration <= 0 || count <= 0) return null;
+      return duration / count;
+    }
+
+    function calculate() {
+      const start1 = getTotalSeconds('startHour1', 'startMinute1', 'startSecond1');
+      const end1 = getTotalSeconds('endHour1', 'endMinute1', 'endSecond1');
+      const count1 = parseInt(document.getElementById('packageCount1').value);
+
+      const start2 = getTotalSeconds('startHour2', 'startMinute2', 'startSecond2');
+      const end2 = getTotalSeconds('endHour2', 'endMinute2', 'endSecond2');
+      const count2 = parseInt(document.getElementById('packageCount2').value);
+
+      const avg1 = calculateOne(start1, end1, count1);
+      const avg2 = calculateOne(start2, end2, count2);
+
+      if (avg1 === null || avg2 === null) {
+        alert("請確認時間正確（結束時間 > 開始時間）且包裹數量有效");
+        return;
+      }
+
+      const overallAvg = (avg1 + avg2) / 2;
+
+      document.getElementById('result').innerHTML = `
+        第一次平均每包裹處理：<strong>${avg1.toFixed(2)} 秒</strong><br>
+        第二次平均每包裹處理：<strong>${avg2.toFixed(2)} 秒</strong><br>
+        綜合平均處理時間為：<strong>${overallAvg.toFixed(2)} 秒</strong>
+      `;
+    }
+  </script>
+
+</body>
+</html>
